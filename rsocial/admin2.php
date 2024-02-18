@@ -33,19 +33,39 @@ if (isset($_SESSION["id"])) {
 if(isset($_POST["eliminarUsuario"])) {
     $id_usuario = $_POST["id_usuario"];
 
+    
+    $stmt_desactivar_fk = $conn->prepare("SET FOREIGN_KEY_CHECKS=0");
+    $stmt_desactivar_fk->execute();
+    $stmt_desactivar_fk->close();
+
+    
+    $stmt_eliminar_comentarios = $conn->prepare("DELETE FROM comentarios WHERE id_usuario = ?");
+    $stmt_eliminar_comentarios->bind_param("i", $id_usuario);
+    $stmt_eliminar_comentarios->execute();
+    $stmt_eliminar_comentarios->close();
+
+    
     $stmt_eliminar_publicaciones = $conn->prepare("DELETE FROM publicaciones WHERE id_usuario = ?");
     $stmt_eliminar_publicaciones->bind_param("i", $id_usuario);
     $stmt_eliminar_publicaciones->execute();
     $stmt_eliminar_publicaciones->close();
 
+    
     $stmt_eliminar_usuario = $conn->prepare("DELETE FROM usuarios WHERE id = ?");
     $stmt_eliminar_usuario->bind_param("i", $id_usuario);
     $stmt_eliminar_usuario->execute();
     $stmt_eliminar_usuario->close();
 
+    
+    $stmt_activar_fk = $conn->prepare("SET FOREIGN_KEY_CHECKS=1");
+    $stmt_activar_fk->execute();
+    $stmt_activar_fk->close();
+
+    
     header("Location: ".$_SERVER['PHP_SELF']);
     exit();
 }
+
 
 if(isset($_POST["actualizarNombre"])) {
     $id_usuario = $_POST["id_usuario"];
